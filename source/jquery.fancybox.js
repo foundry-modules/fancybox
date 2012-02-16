@@ -9,7 +9,7 @@
  * Copyright 2011 Janis Skarnelis - janis@fancyapps.com
  *
  */
-(function (window, document, $) {
+(function (window, document) {
 	var W = $(window),
 		D = $(document),
 		F = $.fancybox = function () {
@@ -375,7 +375,7 @@
 		// Unbind the keyboard / clicking actions
 		unbindEvents: function () {
 			if (F.wrap) {
-				F.wrap.unbind('.fb');	
+				F.wrap.unbind('.fb');
 			}
 
 			D.unbind('.fb');
@@ -777,7 +777,7 @@
 					F.showLoading();
 
 					content.data('ready', false).bind('load', function() {
-						var iframe = $(this), 
+						var iframe = $(this),
 							height;
 
 						try {
@@ -803,7 +803,7 @@
 							iframe.data('ready', true);
 
 						} else if (height) {
-							F.update();	
+							F.update();
 						}
 					});
 
@@ -834,7 +834,7 @@
 			F.bindEvents();
 			F._preload();
 
-			F.transitions[ F.isOpened ? F.current.nextMethod : F.current.openMethod ]();	
+			F.transitions[ F.isOpened ? F.current.nextMethod : F.current.openMethod ]();
 		},
 
 		_setDimension: function () {
@@ -1382,4 +1382,4 @@
 		return this;
 	};
 
-}(window, document, jQuery));
+}(window, document));
