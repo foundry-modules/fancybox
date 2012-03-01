@@ -1,48 +1,51 @@
-SRC_DIR=source
+include ../../build/modules.mk
 
-FOUNDRY_DIR = ../..
-PRODUCTION_DIR = ${FOUNDRY_DIR}/scripts
-DEVELOPMENT_DIR = ${FOUNDRY_DIR}/scripts_
-MODULARIZE = ${FOUNDRY_DIR}/build/modularize
-UGLIFY = uglifyjs --unsafe -nc
-UGLIFYCSS = uglifycss
+MODULE = fancybox
+FILENAME = ${MODULE}.js
+
+SOURCE = ${SOURCE_DIR}/jquery.${MODULE}.js
+
+PRODUCTION = ${PRODUCTION_DIR}/${FILENAME}
+DEVELOPMENT = ${DEVELOPMENT_DIR}/${FILENAME}
+PRODUCTION_FOLDER = ${PRODUCTION_DIR}/${MODULE}
+DEVELOPMENT_FOLDER = ${DEVELOPMENT_DIR}/${MODULE}
 
 all: premake body buttons thumbs min buttons-min thumbs-min
 
 premake:
-	mkdir -p ${DEVELOPMENT_DIR}/fancybox
-	mkdir -p ${PRODUCTION_DIR}/fancybox
+	mkdir -p ${DEVELOPMENT_FOLDER}
+	mkdir -p ${PRODUCTION_FOLDER}
 
 body:
-	${MODULARIZE} -n "fancybox" -css "fancybox/default" ${SRC_DIR}/jquery.fancybox.js > ${DEVELOPMENT_DIR}/fancybox.js
-	cp ${SRC_DIR}/*.gif ${SRC_DIR}/*.png ${DEVELOPMENT_DIR}/fancybox/
-	cp ${SRC_DIR}/jquery.fancybox.css ${DEVELOPMENT_DIR}/fancybox/default.css
+	${MODULARIZE} -n "${MODULE}" -css "fancybox/default" ${SOURCE} > ${DEVELOPMENT}
+	cp ${SOURCE_DIR}/*.gif ${SOURCE_DIR}/*.png ${DEVELOPMENT_FOLDER}/
+	cp ${SOURCE_DIR}/jquery.fancybox.css ${DEVELOPMENT_FOLDER}/default.css
 
 buttons:
-	${MODULARIZE} -n "fancybox/buttons" -css "fancybox/buttons" ${SRC_DIR}/helpers/jquery.fancybox-buttons.js > ${DEVELOPMENT_DIR}/fancybox/buttons.js
-	cp ${SRC_DIR}/helpers/fancybox_buttons.png ${DEVELOPMENT_DIR}/fancybox/fancybox_buttons.png
-	cp ${SRC_DIR}/helpers/jquery.fancybox-buttons.css ${DEVELOPMENT_DIR}/fancybox/buttons.css
+	${MODULARIZE} -n "fancybox/buttons" -css "fancybox/buttons" ${SOURCE_DIR}/helpers/jquery.fancybox-buttons.js > ${DEVELOPMENT_FOLDER}/buttons.js
+	cp ${SOURCE_DIR}/helpers/fancybox_buttons.png ${DEVELOPMENT_FOLDER}/fancybox_buttons.png
+	cp ${SOURCE_DIR}/helpers/jquery.fancybox-buttons.css ${DEVELOPMENT_FOLDER}/buttons.css
 
 thumbs:
-	${MODULARIZE} -n "fancybox/thumbs" -css "fancybox/thumbs" ${SRC_DIR}/helpers/jquery.fancybox-thumbs.js > ${DEVELOPMENT_DIR}/fancybox/thumbs.js
-	cp ${SRC_DIR}/helpers/jquery.fancybox-thumbs.css ${DEVELOPMENT_DIR}/fancybox/thumbs.css
+	${MODULARIZE} -n "fancybox/thumbs" -css "fancybox/thumbs" ${SOURCE_DIR}/helpers/jquery.fancybox-thumbs.js > ${DEVELOPMENT_FOLDER}/thumbs.js
+	cp ${SOURCE_DIR}/helpers/jquery.fancybox-thumbs.css ${DEVELOPMENT_FOLDER}/thumbs.css
 
 min:
-	${UGLIFY} ${DEVELOPMENT_DIR}/fancybox.js > ${PRODUCTION_DIR}/fancybox.js
-	cp ${SRC_DIR}/*.gif ${SRC_DIR}/*.png ${PRODUCTION_DIR}/fancybox/
-	${UGLIFYCSS} ${SRC_DIR}/jquery.fancybox.css > ${PRODUCTION_DIR}/fancybox/default.css
+	${UGLIFYJS} ${DEVELOPMENT} > ${PRODUCTION}
+	cp ${SOURCE_DIR}/*.gif ${SOURCE_DIR}/*.png ${PRODUCTION_FOLDER}/
+	${UGLIFYCSS} ${SOURCE_DIR}/jquery.fancybox.css > ${PRODUCTION_FOLDER}/default.css
 
 buttons-min:
-	${UGLIFY} ${DEVELOPMENT_DIR}/fancybox/buttons.js > ${PRODUCTION_DIR}/fancybox/buttons.js
-	cp ${SRC_DIR}/helpers/fancybox_buttons.png ${PRODUCTION_DIR}/fancybox/fancybox_buttons.png
-	${UGLIFYCSS} ${SRC_DIR}/helpers/jquery.fancybox-buttons.css > ${PRODUCTION_DIR}/fancybox/buttons.css
+	${UGLIFYJS} ${DEVELOPMENT_FOLDER}/buttons.js > ${PRODUCTION_FOLDER}/buttons.js
+	cp ${SOURCE_DIR}/helpers/fancybox_buttons.png ${PRODUCTION_FOLDER}/fancybox_buttons.png
+	${UGLIFYCSS} ${SOURCE_DIR}/helpers/jquery.fancybox-buttons.css > ${PRODUCTION_FOLDER}/buttons.css
 
 thumbs-min:
-	${UGLIFY} ${DEVELOPMENT_DIR}/fancybox/thumbs.js > ${PRODUCTION_DIR}/fancybox/thumbs.js
-	${UGLIFYCSS} ${SRC_DIR}/helpers/jquery.fancybox-thumbs.css > ${PRODUCTION_DIR}/fancybox/thumbs.css
+	${UGLIFYJS} ${DEVELOPMENT_FOLDER}/thumbs.js > ${PRODUCTION_FOLDER}/thumbs.js
+	${UGLIFYCSS} ${SOURCE_DIR}/helpers/jquery.fancybox-thumbs.css > ${PRODUCTION_FOLDER}/thumbs.css
 
 clean:
-	rm -fr ${DEVELOPMENT_DIR}/fancybox.js
-	rm -fr ${DEVELOPMENT_DIR}/fancybox
-	rm -fr ${PRODUCTION_DIR}/fancybox.js
-	rm -fr ${PRODUCTION_DIR}/fancybox
+	rm -fr ${DEVELOPMENT}
+	rm -fr ${DEVELOPMENT_FOLDER}
+	rm -fr ${PRODUCTION}
+	rm -fr ${PRODUCTION_FOLDER}
