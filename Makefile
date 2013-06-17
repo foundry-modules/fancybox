@@ -1,51 +1,29 @@
+all: create-script-folder fancybox submodules
+
 include ../../build/modules.mk
 
 MODULE = fancybox
-FILENAME = ${MODULE}.js
 
-SOURCE = ${SOURCE_DIR}/jquery.${MODULE}.js
+SOURCE_ASSET_FILES = ${SOURCE_STYLE_FOLDER}/*.gif \
+${SOURCE_STYLE_FOLDER}/*.png
 
-PRODUCTION = ${PRODUCTION_DIR}/${FILENAME}
-DEVELOPMENT = ${DEVELOPMENT_DIR}/${FILENAME}
-PRODUCTION_FOLDER = ${PRODUCTION_DIR}/${MODULE}
-DEVELOPMENT_FOLDER = ${DEVELOPMENT_DIR}/${MODULE}
+TARGET_STYLE_LESS_CONVERTER = sed "s/url('/url('@{foundry_uri}\/fancybox\//g"
 
-all: premake body buttons thumbs min buttons-min thumbs-min
+fancybox: modularize-script minify-script copy-style minify-style lessify-style copy-assets
 
-premake:
-	mkdir -p ${DEVELOPMENT_FOLDER}
-	mkdir -p ${PRODUCTION_FOLDER}
+submodules:
+	make buttons
+	make thumbs
 
-body:
-	${MODULARIZE} -n "${MODULE}" -css "fancybox/default" ${SOURCE} > ${DEVELOPMENT}
-	cp ${SOURCE_DIR}/*.gif ${SOURCE_DIR}/*.png ${DEVELOPMENT_FOLDER}/
-	cp ${SOURCE_DIR}/jquery.fancybox.css ${DEVELOPMENT_FOLDER}/default.css
+submodule-%:
+	$(eval MODULE                  = fancybox/$*)
+	$(eval SOURCE_SCRIPT_FOLDER    = source/helpers)
+	$(eval SOURCE_SCRIPT_FILE_NAME = fancybox-$*)
+	$(eval SOURCE_STYLE_FILE_NAME  = fancybox-$*)
+	$(eval TARGET_STYLE_FOLDER     = ${FOUNDRY_STYLES_FOLDER}/fancybox)
+	$(eval TARGET_STYLE_FILE_NAME  = $*)
+	
+buttons: submodule-buttons modularize-script minify-script copy-style minify-style lessify-style
+	cp ${SOURCE_STYLE_FOLDER}/fancybox_buttons.png ${TARGET_STYLE_FOLDER}/fancybox_buttons.png
 
-buttons:
-	${MODULARIZE} -n "fancybox/buttons" -css "fancybox/buttons" ${SOURCE_DIR}/helpers/jquery.fancybox-buttons.js > ${DEVELOPMENT_FOLDER}/buttons.js
-	cp ${SOURCE_DIR}/helpers/fancybox_buttons.png ${DEVELOPMENT_FOLDER}/fancybox_buttons.png
-	cp ${SOURCE_DIR}/helpers/jquery.fancybox-buttons.css ${DEVELOPMENT_FOLDER}/buttons.css
-
-thumbs:
-	${MODULARIZE} -n "fancybox/thumbs" -css "fancybox/thumbs" ${SOURCE_DIR}/helpers/jquery.fancybox-thumbs.js > ${DEVELOPMENT_FOLDER}/thumbs.js
-	cp ${SOURCE_DIR}/helpers/jquery.fancybox-thumbs.css ${DEVELOPMENT_FOLDER}/thumbs.css
-
-min:
-	${UGLIFYJS} ${DEVELOPMENT} > ${PRODUCTION}
-	cp ${SOURCE_DIR}/*.gif ${SOURCE_DIR}/*.png ${PRODUCTION_FOLDER}/
-	${UGLIFYCSS} ${SOURCE_DIR}/jquery.fancybox.css > ${PRODUCTION_FOLDER}/default.css
-
-buttons-min:
-	${UGLIFYJS} ${DEVELOPMENT_FOLDER}/buttons.js > ${PRODUCTION_FOLDER}/buttons.js
-	cp ${SOURCE_DIR}/helpers/fancybox_buttons.png ${PRODUCTION_FOLDER}/fancybox_buttons.png
-	${UGLIFYCSS} ${SOURCE_DIR}/helpers/jquery.fancybox-buttons.css > ${PRODUCTION_FOLDER}/buttons.css
-
-thumbs-min:
-	${UGLIFYJS} ${DEVELOPMENT_FOLDER}/thumbs.js > ${PRODUCTION_FOLDER}/thumbs.js
-	${UGLIFYCSS} ${SOURCE_DIR}/helpers/jquery.fancybox-thumbs.css > ${PRODUCTION_FOLDER}/thumbs.css
-
-clean:
-	rm -fr ${DEVELOPMENT}
-	rm -fr ${DEVELOPMENT_FOLDER}
-	rm -fr ${PRODUCTION}
-	rm -fr ${PRODUCTION_FOLDER}
+thumbs: submodule-thumbs modularize-script minify-script copy-style minify-style lessify-style
